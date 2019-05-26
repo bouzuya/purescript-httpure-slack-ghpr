@@ -18,6 +18,12 @@ import Model.PullRequest as PullRequest
 import Simple.JSON as SimpleJSON
 import View.PullRequest as ViewPullRequest
 
+type GHResponse =
+  { base :: { ref :: String }
+  , head :: { ref :: String }
+  , title :: String
+  }
+
 execute :: String -> String -> ResponseM
 execute url s = do
   case PullRequest.fromString s of
@@ -31,13 +37,19 @@ execute url s = do
                 [ Tuple.Tuple "User-Agent" "slack-ghpr"
                 ])
           <> Client.method := Method.GET)
-      { title } <-
+      { base: { ref: baseRef }, head: { ref: headRef }, title } <-
         Class.liftEffect
           (Maybe.maybe
             (Exception.throw "fetch title")
             pure
-            (SimpleJSON.readJSON_ (Maybe.fromMaybe "" body) :: _ { title :: String }))
+            (SimpleJSON.readJSON_ (Maybe.fromMaybe "" body) :: _ GHResponse))
       let
         headers = HTTPure.header "Content-Type" "application/json"
-        rendered = ViewPullRequest.render (PullRequest.toString pr) title
+        rendered =
+          ViewPullRequest.render
+            { base: baseRef
+            , head: headRef
+            , name: (PullRequest.toString pr)
+            , title
+            }
       HTTPure.ok' headers rendered
