@@ -2,6 +2,7 @@ module Model.PullRequest
   ( PullRequest
   , fromString
   , toString
+  , toUrlString
   ) where
 
 import Prelude
@@ -36,3 +37,10 @@ toString :: PullRequest -> String
 toString (PullRequest user repo number) =
   user <> "/" <> repo <> "#" <> show number
 
+toUrlString :: PullRequest -> String
+toUrlString (PullRequest user repo number) =
+  let
+    baseUrl = "https://api.github.com"
+    path = "/repos/" <> user <> "/" <> repo <> "/pulls/" <> show number
+  in
+    baseUrl <> path

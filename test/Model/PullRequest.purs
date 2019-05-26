@@ -26,3 +26,7 @@ tests = TestUnit.suite "Model.PullRequest" do
       (map
         PullRequest.toString
         (PullRequest.fromString "user.name/repo.name#123"))
+  TestUnit.test "toUrlString" do
+    Assert.equal
+      (Maybe.Just "https://api.github.com/repos/user/repo/pulls/123")
+      (map PullRequest.toUrlString (PullRequest.fromString "user/repo#123"))
