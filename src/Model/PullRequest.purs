@@ -20,7 +20,7 @@ data PullRequest = PullRequest String String Int
 regex :: Regex
 regex =
   RegexUnsafe.unsafeRegex
-    "^([-_a-z0-9]+)/([-_a-z0-9]+)#([0-9]+)$"
+    "^([-_a-z0-9.]+)/([-_a-z0-9.]+)#([0-9]+)$"
     RegexFlags.noFlags
 
 fromString :: String -> Maybe PullRequest
